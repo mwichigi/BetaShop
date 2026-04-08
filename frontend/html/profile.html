@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile – βetaShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .profile-page { padding: 3rem; min-height: calc(100vh - 70px); }
+    .profile-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+    .profile-header h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 3vw, 2.8rem); }
+    .profile-card { max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+    .profile-summary, .profile-form { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+    .profile-summary { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .profile-avatar { width: 110px; height: 110px; border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem; background: linear-gradient(135deg, #7c3aed, #ec4899); color: #fff; margin-bottom: 1.2rem; overflow: hidden; }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-summary h2 { margin-bottom: 0.4rem; }
+    .profile-summary p { color: var(--text-muted); margin-bottom: 1rem; }
+    .profile-summary button { margin-top: auto; width: 100%; }
+    .profile-form .form-row { display: grid; gap: 1rem; margin-bottom: 1rem; }
+    .profile-form label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
+    .profile-form input, .profile-form textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; }
+    .profile-form textarea { min-height: 110px; resize: vertical; }
+    .profile-form .file-input { display: flex; gap: 1rem; align-items: center; }
+    .profile-form .file-input label { margin: 0; }
+    .profile-form .save-btn { margin-top: 1rem; }
+    .profile-form .note { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+    @media(max-width: 820px) { .profile-card { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand" onclick="window.location.href='index.html'">βetaShop</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="window.location.href='shop.html'">&#128269;</button>
+      <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'">&#128722;</button>
+      <button class="btn-signin" id="signOutBtn">Sign Out</button>
+    </div>
+  </nav>
+
+  <main class="profile-page">
+    <div class="profile-header">
+      <div>
+        <h1>My Profile</h1>
+        <p>Manage your account details, contact information, and preferences.</p>
+      </div>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:flex-end; align-items:center;">
+        <button class="btn-primary" onclick="window.location.href='view-order.html'">View Order</button>
+        <button class="btn-primary" onclick="window.location.href='index.html'">Back to Home</button>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <section class="profile-summary">
+        <div class="profile-avatar" id="profileAvatar">AB</div>
+        <h2 id="profileName">User Name</h2>
+        <p id="profileEmail">email@example.com</p>
+        <p id="profilePhone"></p>
+        <p id="profileLocation"></p>
+        <div class="profile-details">
+          <p class="note">Upload a profile picture and save your contact details for a personalized experience.</p>
+        </div>
+      </section>
+
+      <section class="profile-form">
+        <form id="profileForm">
+          <div class="file-input">
+            <div>
+              <label for="profilePicInput">Upload profile picture</label>
+              <input type="file" id="profilePicInput" accept="image/*" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="firstNameInput">First Name</label>
+              <input type="text" id="firstNameInput" placeholder="First name" />
+            </div>
+            <div>
+              <label for="lastNameInput">Last Name</label>
+              <input type="text" id="lastNameInput" placeholder="Last name" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="emailInput">Email</label>
+              <input type="email" id="emailInput" disabled />
+            </div>
+            <div>
+              <label for="phoneInput">Phone</label>
+              <input type="tel" id="phoneInput" placeholder="+254 700 000 000" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="locationInput">Location</label>
+              <input type="text" id="locationInput" placeholder="City, Country" />
+            </div>
+            <div>
+              <label for="preferencesInput">Preferences</label>
+              <textarea id="preferencesInput" placeholder="Your preferences, interests, or notes"></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary save-btn">Save Profile</button>
+          <p class="note">Changes are saved locally in your browser.</p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/profile.js"></script>
+</body>
+</html>

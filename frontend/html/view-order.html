@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>View Order – βetaShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .order-page { padding: 3rem; min-height: calc(100vh - 70px); }
+    .order-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+    .order-card { max-width: 1000px; margin: 0 auto; display: grid; gap: 1.5rem; }
+    .order-summary { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card-bg); padding: 1.8rem; }
+    .order-summary h2 { margin-top: 0; }
+    .order-item { display: flex; gap: 1rem; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+    .order-item img { width: 90px; height: 90px; object-fit: cover; border-radius: 14px; }
+    .order-item-info { flex: 1; }
+    .order-item-title { margin: 0 0 0.5rem; }
+    .order-footer { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+    .order-empty { text-align: center; color: var(--text-muted); padding: 4rem 2rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand" onclick="window.location.href='index.html'">βetaShop</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="window.location.href='shop.html'">&#128269;</button>
+      <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'">&#128722;</button>
+      <a href="auth.html" class="btn-signin" id="homeSignInLink">Sign In</a>
+      <a href="profile.html" class="user-pill" id="homeUserPill" style="display:none"></a>
+    </div>
+  </nav>
+
+  <main class="order-page">
+    <div class="order-header">
+      <div>
+        <h1>Your Order</h1>
+        <p>Review the products you paid for in your last transaction.</p>
+      </div>
+      <div>
+        <button class="btn-primary" onclick="window.location.href='index.html'">Back to Home</button>
+      </div>
+    </div>
+
+    <div class="order-card" id="orderContent"></div>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/order.js"></script>
+  <script src="js/view-order.js"></script>
+</body>
+</html>

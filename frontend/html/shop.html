@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shop – βetaShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand" onclick="window.location.href='index.html'">βetaShop</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html" class="active">Shop</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn cart-btn" onclick="window.location.href='checkout.html'">
+        🛒 <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <a href="auth.html" class="btn-signin" id="authLink">Sign In</a>
+    </div>
+  </nav>
+
+  <div class="shop-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Categories</h3>
+        <ul class="category-list" id="categoryList">
+          <li class="active" onclick="filterCategory(null, this)">All Products</li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>Price Range</h3>
+        <div class="price-range">
+          <label>Max: Ksh <span id="priceVal">1000</span></label>
+          <input type="range" id="priceRange" min="0" max="2000" value="1000" step="10"
+            oninput="document.getElementById('priceVal').textContent=this.value; applyPriceFilter()"/>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <h3>Sort By</h3>
+        <select class="sort-select" style="width:100%" id="sortSelect" onchange="applySort()">
+          <option value="">Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating-desc">Top Rated</option>
+          <option value="title-asc">Name A–Z</option>
+        </select>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="shop-main">
+      <div class="shop-toolbar">
+        <input class="search-bar" type="text" id="searchInput" placeholder="Search products..."
+          oninput="debounceSearch(this.value)"/>
+        <span class="results-info" id="resultsInfo"></span>
+      </div>
+      <div class="products-grid" id="productsGrid">
+        <div class="loading-spinner">Loading products...</div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </main>
+  </div>
+
+  <button class="chatbot-btn" onclick="toggleChat()">💬</button>
+  <div class="chatbot-window" id="chatWindow" style="display:none">
+    <div class="chat-header"><span>βetaBot</span><button onclick="toggleChat()">✕</button></div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">Hi! How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button onclick="sendChat()">Send</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    const API = 'https://dummyjson.com';
+    let currentPage = 1;
+    const perPage = 12;
+    let currentCategory = null;
+    let currentSearch = '';
+    let maxPrice = 2000;
+    let sortBy = '';
+    let totalProducts = 0;
+    let allLoaded = [];
+    let searchTimeout = null;
+
+    // Load categories into sidebar
+    async function loadCategories() {
+      try {
+        const cats = await fetch(`${API}/products/categories`).then(r => r.json());
+        const list = document.getElementById('categoryList');
+        cats.forEach(cat => {
+          const li = document.createElement('li');
+          li.textContent = cat;
+          li.dataset.slug = cat;
+          li.onclick = function() { filterCategory(cat, this); };
+          list.appendChild(li);
+        });
+      } catch(e) {}
+    }
+
+    function filterCategory(slug, el) {
+      currentCategory = slug;
+      currentPage = 1;
+      currentSearch = '';
+      document.getElementById('searchInput').value = '';
+      document.querySelectorAll('.category-list li').forEach(l => l.classList.remove('active'));
+      el.classList.add('active');
+      loadShopProducts();
+    }
+
+    function debounceSearch(val) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentSearch = val.trim();
+        currentPage = 1;
+        currentCategory = null;
+        document.querySelectorAll('.category-list li').forEach(l => l.classList.remove('active'));
+        document.querySelector('.category-list li').classList.add('active');
+        loadShopProducts();
+      }, 400);
+    }
+
+    function applyPriceFilter() {
+      maxPrice = parseInt(document.getElementById('priceRange').value);
+      renderFiltered();
+    }
+
+    function applySort() {
+      sortBy = document.getElementById('sortSelect').value;
+      renderFiltered();
+    }
+
+    function renderFiltered() {
+      let filtered = allLoaded.filter(p => p.price <= maxPrice);
+      if (sortBy === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+      else if (sortBy === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+      else if (sortBy === 'rating-desc') filtered.sort((a,b) => b.rating - a.rating);
+      else if (sortBy === 'title-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+
+      document.getElementById('resultsInfo').textContent = `${filtered.length} products`;
+      const grid = document.getElementById('productsGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><h3>No products found</h3><p>Try a different filter or search term</p></div>';
+      } else {
+        grid.innerHTML = filtered.map(renderProductCard).join('');
+      }
+    }
+
+    async function loadShopProducts() {
+      const grid = document.getElementById('productsGrid');
+      const info = document.getElementById('resultsInfo');
+      grid.innerHTML = '<div class="loading-spinner">Loading products...</div>';
+      info.textContent = '';
+
+      try {
+        let url, data;
+        if (currentSearch) {
+          url = `${API}/products/search?q=${encodeURIComponent(currentSearch)}&limit=100`;
+          data = await fetch(url).then(r => r.json());
+        } else if (currentCategory) {
+          url = `${API}/products/category/${currentCategory}?limit=100`;
+          data = await fetch(url).then(r => r.json());
+        } else {
+          url = `${API}/products?limit=100`;
+          data = await fetch(url).then(r => r.json());
+        }
+
+        allLoaded = data.products || [];
+        totalProducts = allLoaded.length;
+        renderFiltered();
+        renderPagination();
+      } catch(err) {
+        grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Check your internet connection</p></div>';
+      }
+    }
+
+    function renderPagination() {
+      // pagination hidden since we load all and filter client-side
+      document.getElementById('pagination').innerHTML = '';
+    }
+
+    // Check for URL params on load
+    function checkURLParams() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('category')) {
+        currentCategory = params.get('category');
+        // Highlight sidebar after categories load
+        setTimeout(() => {
+          const items = document.querySelectorAll('.category-list li');
+          items.forEach(li => {
+            li.classList.remove('active');
+            if (li.dataset.slug === currentCategory) li.classList.add('active');
+          });
+        }, 800);
+      }
+      const searchParam = params.get('search');
+      if (searchParam && searchParam !== 'true') {
+        currentSearch = searchParam;
+        document.getElementById('searchInput').value = searchParam;
+      } else if (params.get('q')) {
+        currentSearch = params.get('q');
+        document.getElementById('searchInput').value = currentSearch;
+      }
+      loadShopProducts();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCategories();
+      checkURLParams();
+      updateCartCount();
+
+      // Auth link update
+      const token = localStorage.getItem('betaToken');
+      const user = localStorage.getItem('betaUser');
+      if (token && user) {
+        const parsed = JSON.parse(user);
+        document.getElementById('authLink').textContent = parsed.firstName || 'Account';
+        document.getElementById('authLink').href = '#';
+      }
+    });
+  </script>
+</body>
+</html>

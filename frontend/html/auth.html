@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In – βetaShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-page {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .auth-box {
+      background: var(--card-bg, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 14px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 420px;
+    }
+    .auth-box h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--text, #f0f0f0);
+    }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border, #2a2a2a);
+      margin-bottom: 1.8rem;
+    }
+    .auth-tab {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted, #888);
+      padding: 0.8rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+    .auth-tab.active { color: #7c3aed; border-bottom-color: #7c3aed; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted, #888);
+      margin-bottom: 0.4rem;
+    }
+    .form-group input {
+      width: 100%;
+      background: var(--bg3, #1a1a1a);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: var(--text, #f0f0f0);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .form-group input:focus { border-color: #7c3aed; }
+    .form-group input.input-error { border-color: #ef4444; }
+    .field-error {
+      color: #ef4444;
+      font-size: 0.78rem;
+      margin-top: 0.3rem;
+      display: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      width: 100%;
+      transition: opacity 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.2rem;
+      color: var(--text-muted, #888);
+      font-size: 0.85rem;
+    }
+    .auth-footer button {
+      background: none;
+      border: none;
+      color: #7c3aed;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .auth-footer button:hover { color: #ec4899; }
+    .demo-hint {
+      text-align: center;
+      color: var(--text-muted, #888);
+      font-size: 0.78rem;
+      margin-top: 0.8rem;
+    }
+    .demo-hint code {
+      background: var(--bg3, #1a1a1a);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .toast {
+      padding: 0.8rem 1.8rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      color: white;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #22c55e; }
+    .toast.error   { background: #ef4444; }
+    .toast.info    { background: #7c3aed; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand" onclick="window.location.href='index.html'">βetaShop</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'">
+        🛒 <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="auth-page">
+    <div class="auth-box">
+      <h2 id="authTitle">Welcome back</h2>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- ===== LOGIN FORM ===== -->
+      <div id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"
+            onkeydown="if(event.key==='Enter') submitLogin()"/>
+          <div class="field-error" id="loginEmailErr">Please enter a valid email.</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') submitLogin()"/>
+          <div class="field-error" id="loginPasswordErr">Password is required.</div>
+        </div>
+
+        <button class="btn-primary" id="loginBtn" onclick="submitLogin()">Sign In</button>
+
+        <div class="auth-footer">
+          Don't have an account?
+          <button onclick="switchTab('register')">Register here</button>
+        </div>
+      </div>
+
+      <!-- ===== REGISTER FORM ===== -->
+      <div id="registerForm" style="display:none">
+        <div class="name-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="regFirstName" placeholder="John" autocomplete="given-name"
+              onkeydown="if(event.key==='Enter') submitRegister()"/>
+            <div class="field-error" id="regFirstNameErr">First name is required.</div>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="regLastName" placeholder="Doe" autocomplete="family-name"
+              onkeydown="if(event.key==='Enter') submitRegister()"/>
+            <div class="field-error" id="regLastNameErr">Last name is required.</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email"
+            onkeydown="if(event.key==='Enter') submitRegister()"/>
+          <div class="field-error" id="regEmailErr">Please enter a valid email.</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" placeholder="Min. 6 characters" autocomplete="new-password"
+            onkeydown="if(event.key==='Enter') submitRegister()"/>
+          <div class="field-error" id="regPasswordErr">Password must be at least 6 characters.</div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="regConfirm" placeholder="Re-enter password"
+            onkeydown="if(event.key==='Enter') submitRegister()"/>
+          <div class="field-error" id="regConfirmErr">Passwords do not match.</div>
+        </div>
+
+        <button class="btn-primary" id="registerBtn" onclick="submitRegister()">Create Account</button>
+
+        <div class="auth-footer">
+          Already have an account?
+          <button onclick="switchTab('login')">Sign in here</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/cart.js"></script>
+  <script>
+    const BACKEND = 'http://localhost:3000/api';
+
+    // ── Toast ──────────────────────────────────────────────────────────────────
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // ── Tab switching ──────────────────────────────────────────────────────────
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('loginForm').style.display    = isLogin ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = isLogin ? 'none'  : 'block';
+      document.getElementById('tabLogin').classList.toggle('active', isLogin);
+      document.getElementById('tabRegister').classList.toggle('active', !isLogin);
+      document.getElementById('authTitle').textContent = isLogin ? 'Welcome back' : 'Create account';
+      clearAllErrors();
+    }
+
+    // ── Validation helpers ─────────────────────────────────────────────────────
+    function clearAllErrors() {
+      document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('input').forEach(el => el.classList.remove('input-error'));
+    }
+
+    function showFieldError(inputId, errId, customMsg) {
+      const input = document.getElementById(inputId);
+      const err   = document.getElementById(errId);
+      if (input) input.classList.add('input-error');
+      if (err) {
+        if (customMsg) err.textContent = customMsg;
+        err.style.display = 'block';
+      }
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // ── Loading state ──────────────────────────────────────────────────────────
+    function setLoading(btnId, loading, label) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.innerHTML = loading ? `<div class="spinner"></div> Please wait...` : label;
+    }
+
+    // ── Profile persistence helpers ───────────────────────────────────────────
+    function getSavedProfiles() {
+      return JSON.parse(localStorage.getItem('betaUserProfiles') || '{}');
+    }
+
+    function saveProfileStore(user) {
+      if (!user || !user.email) return;
+      const profiles = getSavedProfiles();
+      profiles[user.email] = {
+        ...(profiles[user.email] || {}),
+        ...user,
+        email: user.email
+      };
+      localStorage.setItem('betaUserProfiles', JSON.stringify(profiles));
+    }
+
+    function mergeUserWithSavedProfile(user) {
+      if (!user || !user.email) return user;
+      const profiles = getSavedProfiles();
+      return { ...user, ...(profiles[user.email] || {}) };
+    }
+
+    // ── Save session ───────────────────────────────────────────────────────────
+    function saveSession(token, user) {
+      const mergedUser = mergeUserWithSavedProfile(user);
+      localStorage.setItem('betaToken', token);
+      localStorage.setItem('betaUser', JSON.stringify(mergedUser));
+      saveProfileStore(mergedUser);
+    }
+
+    function saveUpdatedProfile(user) {
+      localStorage.setItem('betaUser', JSON.stringify(user));
+      saveProfileStore(user);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SUBMIT LOGIN
+    // ══════════════════════════════════════════════════════════════════════════
+    async function submitLogin() {
+      clearAllErrors();
+      const email    = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      let valid = true;
+
+      if (!email || !isValidEmail(email)) {
+        showFieldError('loginEmail', 'loginEmailErr');
+        valid = false;
+      }
+      if (!password) {
+        showFieldError('loginPassword', 'loginPasswordErr');
+        valid = false;
+      }
+      if (!valid) return;
+
+      setLoading('loginBtn', true, 'Sign In');
+
+      try {
+        const res  = await fetch(`${BACKEND}/auth/login`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          saveSession(data.token, data.user);
+          showToast('✅ Signed in successfully!', 'success');
+          setTimeout(() => window.location.href = 'index.html', 1200);
+        } else {
+          showToast('❌ ' + (data.error || data.message || 'Invalid email or password.'), 'error');
+        }
+      } catch {
+        // Backend offline — fallback demo
+        try {
+          const res  = await fetch('https://dummyjson.com/auth/login', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ username: 'emilys', password: 'emilyspass', expiresInMins: 60 })
+          });
+          const data = await res.json();
+          if (data.accessToken) {
+            saveSession(data.accessToken, {
+              name:      `${data.firstName} ${data.lastName}`,
+              email:     data.email,
+              firstName: data.firstName,
+              lastName:  data.lastName,
+            });
+            showToast('✅ Signed in (demo mode)!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1200);
+          } else {
+            showToast('❌ Login failed. Check your credentials.', 'error');
+          }
+        } catch {
+          showToast('❌ Cannot connect to server. Please try again.', 'error');
+        }
+      } finally {
+        setLoading('loginBtn', false, 'Sign In');
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SUBMIT REGISTER
+    // ══════════════════════════════════════════════════════════════════════════
+    async function submitRegister() {
+      clearAllErrors();
+      const firstName = document.getElementById('regFirstName').value.trim();
+      const lastName  = document.getElementById('regLastName').value.trim();
+      const email     = document.getElementById('regEmail').value.trim();
+      const password  = document.getElementById('regPassword').value;
+      const confirm   = document.getElementById('regConfirm').value;
+      let valid = true;
+
+      if (!firstName) { showFieldError('regFirstName', 'regFirstNameErr'); valid = false; }
+      if (!lastName)  { showFieldError('regLastName',  'regLastNameErr');  valid = false; }
+      if (!email || !isValidEmail(email)) { showFieldError('regEmail', 'regEmailErr'); valid = false; }
+      if (!password || password.length < 6) { showFieldError('regPassword', 'regPasswordErr'); valid = false; }
+      if (confirm !== password) { showFieldError('regConfirm', 'regConfirmErr'); valid = false; }
+      if (!valid) return;
+
+      setLoading('registerBtn', true, 'Create Account');
+
+      try {
+        const res  = await fetch(`${BACKEND}/auth/register`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            firstName,
+            lastName,
+            name: `${firstName} ${lastName}`,
+            email,
+            password
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          saveProfileStore({
+            firstName,
+            lastName,
+            name: `${firstName} ${lastName}`,
+            email,
+            profileImage: null
+          });
+          showToast('🎉 Account created successfully!', 'success');
+          setTimeout(() => window.location.href = 'auth.html', 1200);
+        } else if (res.status === 400 && (data.error || '').toLowerCase().includes('already')) {
+          showFieldError('regEmail', 'regEmailErr', 'This email is already registered.');
+          showToast('❌ This email is already registered.', 'error');
+        } else {
+          showToast('❌ ' + (data.error || data.message || 'Registration failed.'), 'error');
+        }
+      } catch {
+        showToast('❌ Backend offline. Cannot register right now.', 'error');
+      } finally {
+        setLoading('registerBtn', false, 'Create Account');
+      }
+    }
+
+    // ── Auto-redirect if already logged in ────────────────────────────────────
+    // Remove immediate redirect so homepage Sign In navigation remains usable.
+    // If the user has a token stored, they can still access auth.html.
+    // if (localStorage.getItem('betaToken')) {
+    //   window.location.href = 'index.html';
+    // }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof updateCartCount === 'function') updateCartCount();
+    });
+  </script>
+</body>
+</html>

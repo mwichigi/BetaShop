@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>βetaShop – Premium Digital Assets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">βetaShop</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="window.location.href='shop.html?search=true'">&#128269;</button>
+      <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'">
+        &#128722; <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <a href="auth.html" class="btn-signin" id="homeSignInLink">Sign In</a>
+      <a href="profile.html" class="user-pill" id="homeUserPill" style="display:none"></a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Discover<br><span class="gradient-text">Premium</span><br>Digital Assets</h1>
+      <p>Templates, software, courses, and tools — all in one place. Instant delivery, lifetime access.</p>
+      <div class="hero-btns">
+      <a href="shop.html" class="btn-primary">Browse Products</a>
+      <a href="shop.html?featured=true" class="btn-ghost">See featured →</a>
+      </div>
+    </div>
+    <div class="hero-cards">
+      <div class="product-card-float card1">
+        <div class="card-icon">🛒</div>
+        <div class="card-title">Ni Mbayaa😂...Tufanye Shope</div>
+        <div class="card-price"></div>
+      </div>
+      <div class="product-card-float card2">
+        <div class="card-icon">🎁🎁</div>
+        <div class="card-title">Gifts ni Kibao</div>
+        <div class="card-price">Zawadikaa na βetaShop 🧧</div>
+      </div>
+      <div class="product-card-float card3">
+        <div class="card-icon">💯</div>
+        <div class="card-title">Discounts nazo n Mob😳</div>
+        <div class="card-price">Ksh 49 Off</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories-section">
+    <h2>Shop by Category</h2>
+    <div class="categories-grid" id="categoriesGrid">
+      <div class="category-pill" onclick="goToCategory('beauty')">Beauty</div>
+      <div class="category-pill" onclick="goToCategory('smartphones')">Smartphones</div>
+      <div class="category-pill" onclick="goToCategory('laptops')">Laptops</div>
+      <div class="category-pill" onclick="goToCategory('furniture')">Furniture</div>
+      <div class="category-pill" onclick="goToCategory('fragrances')">Fragrances</div>
+      <div class="category-pill" onclick="goToCategory('groceries')">Groceries</div>
+      <div class="category-pill" onclick="goToCategory('tops')">Tops</div>
+      <div class="category-pill" onclick="goToCategory('vehicle')">Vehicle</div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="featured-section">
+    <div class="section-header">
+      <h2>Featured Products</h2>
+      <a href="shop.html" class="view-all">View all →</a>
+    </div>
+    <div class="products-grid" id="featuredProducts">
+      <div class="loading-spinner">Loading products...</div>
+    </div>
+  </section>
+
+  <!-- CHATBOT -->
+  <button class="chatbot-btn" onclick="toggleChat()">💬</button>
+  <div class="chatbot-window" id="chatWindow" style="display:none">
+    <div class="chat-header">
+      <span>βetaBot</span>
+      <button onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">Hi! How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button onclick="sendChat()">Send</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/cart.js"></script>
+  <div id="footer"></div>
+</body>
+</html>

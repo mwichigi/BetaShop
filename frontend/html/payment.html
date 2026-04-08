@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment – βetaShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand" onclick="window.location.href='index.html'">βetaShop</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="checkout.html" class="active">Checkout</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn cart-btn" onclick="window.location.href='checkout.html'">🛒 <span class="cart-count" id="cartCount">0</span></button>
+      <a href="auth.html" class="btn-signin">Sign In</a>
+    </div>
+  </nav>
+
+  <main class="payment-page" style="padding:3rem;max-width:900px;margin:0 auto;">
+    <h1>Payment Options</h1>
+    <p class="section-subtitle">Choose a payment method and confirm your order with MPesa.</p>
+
+    <section class="payment-methods" style="margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <button id="mpesaOption" class="payment-card active" onclick="selectPayment('mpesa')">
+        <strong>Mpesa</strong>
+        <p>Pay using your Kenyan Mpesa number.</p>
+      </button>
+      <button id="paypalOption" class="payment-card disabled" onclick="selectPayment('paypal')" disabled>
+        <strong>PayPal</strong>
+        <p>Coming soon — only Mpesa is supported for now.</p>
+      </button>
+    </section>
+
+    <section id="paymentForm" style="margin-top:2rem;"></section>
+
+    <section id="paymentSummary" style="margin-top:2rem;"></section>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/payment.js"></script>
+</body>
+</html>
