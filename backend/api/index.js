@@ -13,7 +13,7 @@ app.use('/api/orders', require('../routes/orders'));
 app.use('/api/payments', require('../routes/payments'));
 
 app.get("/api/test", (req, res) => {
-  res.json({ message: "Backend working ✅" });
+  res.json({ message: "Backend working!" });
 });
 
 module.exports = app;
