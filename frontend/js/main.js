@@ -200,15 +200,10 @@ function sendChat() {
   messages.scrollTop = messages.scrollHeight;
 }
 
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
-  loadFeaturedProducts();
-  updateCartCount();
-  updateHomepageAuthNav();
-});
-// Load footer when a placeholder exists
-const footerContainer = document.getElementById("footer");
-if (footerContainer) {
+function loadFooter() {
+  const footerContainer = document.getElementById("footer");
+  if (!footerContainer) return;
+
   fetch("../footer/footer.html")
     .then(res => {
       if (!res.ok) {
@@ -223,3 +218,11 @@ if (footerContainer) {
       console.error(err);
     });
 }
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  loadFeaturedProducts();
+  updateCartCount();
+  updateHomepageAuthNav();
+  loadFooter();
+});
